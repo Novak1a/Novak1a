@@ -1,0 +1,38 @@
+version: '3.9'
+
+# Orchestrateur principal pour lancer tous les environnements
+# Usage: docker compose up -d
+networks:
+  app_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  # Volumes persistants pour les données
+  react_vite_data:
+    driver: local
+  stack1_db_data:
+    driver: local
+  stack1_redis_data:
+    driver: local
+  stack2_db_data:
+    driver: local
+  stack2_redis_data:
+    driver: local
+  bot_db_data:
+    driver: local
+  n8n_db_data:
+    driver: local
+  n8n_data:
+    driver: local
+
+services:
+  # Les services sont définis dans les sous-dossiers
+  # Utiliser les commandes du Makefile pour gérer les environnements
+  dummy:
+    image: alpine:latest
+    command: echo "Infrastructure Docker initialisée. Utilisez 'make start' pour démarrer les environnements."
+    networks:
+      - app_network
