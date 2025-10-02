@@ -1,155 +1,285 @@
-<!--
-README de profil GitHub
-Repo spécial : Novak1a/Novak1a
-Tout ce qui est entre {{ ... }} est à personnaliser.
--->
+# 🚀 Infrastructure Docker Multi-Environnements
 
-<h1 align="center">👋 Salut, moi c'est {{Ton Prénom ou Pseudo}} (@Novak1a)</h1>
+Infrastructure complète avec 5 environnements Docker pour la production.
 
-<p align="center">
-Passionné par {{domaine principal : ex. le développement web / l’IA / la cybersécurité}} · Toujours en train d’apprendre et d’expérimenter 🧪  
-</p>
+## 📋 Environnements
 
-<p align="center">
-  <a href="https://github.com/Novak1a?tab=followers"><img src="https://img.shields.io/github/followers/Novak1a?label=Followers&style=for-the-badge" alt="Followers"></a>
-  <a href="https://github.com/Novak1a"><img src="https://komarev.com/ghpvc/?username=Novak1a&style=for-the-badge&color=0e75b6" alt="Profile views"></a>
-  <!-- Ajoute d'autres badges si tu veux -->
-</p>
+| Environnement | Domaine | Stack | Statut |
+|--------------|---------|-------|--------|
+| **React Vite** | wydapp.fr | React + Vite + Caddy | 🟢 |
+| **Stack 1** | maximemarc.com | Symfony + React + MariaDB + Redis + Caddy | 🟢 |
+| **Stack 2** | futurcode.com | Symfony + React + MariaDB + Redis + Caddy | 🟢 |
+| **Bot Discord** | - | Node.js + discord.js + MariaDB | 🟢 |
+| **N8N** | n8n.maximemarc.com | N8N + MariaDB + Caddy | 🟢 |
+
+## 🛠️ Prérequis
+
+- Docker Engine 24.x ou supérieur
+- Docker Compose v2.x ou supérieur
+- Git
+- Make (optionnel mais recommandé)
+- Serveur avec au moins 8GB RAM
+- Domaines configurés pointant vers votre serveur
+
+## 🚀 Installation Rapide
+
+### 1. Cloner le repository
+
+```bash
+git clone https://github.com/Novak1a/Novak1a.git
+cd Novak1a
+```
+
+### 2. Configurer les variables d'environnement
+
+```bash
+# Copier le fichier global
+cp .env.global.example .env.global
+
+# Configurer chaque environnement
+cp 1-react-vite/.env.example 1-react-vite/.env
+cp 2-symfony-react-stack/.env.example 2-symfony-react-stack/.env
+cp 3-symfony-react-stack-bis/.env.example 3-symfony-react-stack-bis/.env
+cp 4-discord-bot/.env.example 4-discord-bot/.env
+cp 5-n8n/.env.example 5-n8n/.env
+```
+
+### 3. Éditer les fichiers .env avec vos valeurs
+
+### 4. Démarrer tous les environnements
+
+```bash
+make start
+# ou
+docker compose up -d
+```
+
+## 📦 Commandes Makefile
+
+```bash
+make help              # Afficher l'aide
+make start             # Démarrer tous les environnements
+make stop              # Arrêter tous les environnements
+make restart           # Redémarrer tous les environnements
+make logs              # Afficher les logs
+make ps                # Voir les containers actifs
+
+# Commandes par environnement
+make start-wydapp      # Démarrer React Vite
+make start-maximemarc  # Démarrer Stack 1
+make start-futurcode   # Démarrer Stack 2
+make start-bot         # Démarrer Discord Bot
+make start-n8n         # Démarrer N8N
+
+# Maintenance
+make backup            # Backup toutes les BDD
+make restore           # Restaurer les BDD
+make clean             # Nettoyer les volumes
+```
+
+## 🌐 Configuration DNS
+
+Configurez vos enregistrements DNS :
+
+```
+A    wydapp.fr                 → VOTRE_IP_SERVEUR
+A    maximemarc.com            → VOTRE_IP_SERVEUR
+A    futurcode.com             → VOTRE_IP_SERVEUR
+A    n8n.maximemarc.com        → VOTRE_IP_SERVEUR
+```
+
+## 🔒 SSL/HTTPS
+
+Les certificats SSL Let's Encrypt sont générés automatiquement par Caddy.
+
+**Email configuré:** contact@maximemarc.com
+
+Caddy s'occupe automatiquement de :
+- Génération des certificats
+- Renouvellement automatique
+- Redirection HTTP → HTTPS
+
+## 📊 Monitoring avec Grafana
+
+Accéder au monitoring :
+
+```bash
+cd monitoring
+docker compose up -d
+```
+
+Grafana sera disponible sur `http://localhost:3000`
+- User: `admin`
+- Password: voir `.env` dans `monitoring/`
+
+## 💾 Backup et Restauration
+
+### Backup automatique
+
+```bash
+# Backup toutes les bases de données
+make backup
+
+# Les backups sont stockés dans /var/docker-data/backups/
+```
+
+### Restauration
+
+```bash
+# Restaurer depuis un backup
+make restore BACKUP_DATE=2025-10-02
+```
+
+## 📁 Structure du Projet
+
+```
+.
+├── 1-react-vite/              # React + Vite + Caddy
+├── 2-symfony-react-stack/     # Stack complète Symfony
+├── 3-symfony-react-stack-bis/ # Stack complète Symfony (site 2)
+├── 4-discord-bot/             # Bot Discord
+├── 5-n8n/                     # N8N Workflow automation
+├── monitoring/                # Grafana + Loki
+├── scripts/                   # Scripts utilitaires
+├── .github/workflows/         # CI/CD GitHub Actions
+├── docker-compose.yml         # Orchestrateur principal
+├── Makefile                   # Commandes simplifiées
+└── README.md                  # Ce fichier
+```
+
+## 🔧 Détails des Environnements
+
+### 1. React Vite (wydapp.fr)
+
+Application React frontend simple avec Vite.
+
+**Services:**
+- Frontend (Node.js 22)
+- Caddy (reverse proxy + HTTPS)
+
+**Démarrage:**
+```bash
+cd 1-react-vite
+docker compose up -d
+```
+
+### 2. Stack 1 (maximemarc.com)
+
+Stack complète Symfony + React.
+
+**Services:**
+- Backend Symfony (PHP 8.3)
+- Frontend React (Node.js 22)
+- MariaDB 11.x
+- Redis 7.x (cache + queue)
+- Caddy (reverse proxy)
+
+**Configuration Redis:**
+- Cache Symfony: `redis://redis:6379/0`
+- Messenger Queue: `redis://redis:6379/1`
+
+### 3. Stack 2 (futurcode.com)
+
+Identique à Stack 1 mais pour un projet différent.
+
+### 4. Bot Discord
+
+Bot Discord avec base de données dédiée.
+
+**Services:**
+- Bot Node.js (discord.js)
+- MariaDB dédiée
+
+**Accès API:** Le bot peut appeler l'API de maximemarc.com
+
+### 5. N8N (n8n.maximemarc.com)
+
+Plateforme d'automatisation de workflows.
+
+**Services:**
+- N8N (dernière version)
+- MariaDB
+- Caddy
+
+**Authentification activée**
+**Webhooks accessibles publiquement**
+
+## 🔐 Sécurité
+
+### Bonnes pratiques appliquées:
+
+✅ Containers non-root  
+✅ Secrets via variables d'environnement  
+✅ Réseau Docker isolé (app_network)  
+✅ Healthchecks sur tous les services  
+✅ Rotation des logs  
+✅ Limites de ressources (CPU/RAM)  
+
+### Fichiers sensibles à ne JAMAIS commiter:
+
+- `.env`
+- `.env.local`
+- `secrets/`
+- `backups/`
+
+## 🚨 Troubleshooting
+
+### Les certificats SSL ne se générent pas
+
+```bash
+# Vérifier les logs Caddy
+docker compose logs caddy
+
+# Vérifier que les DNS pointent correctement
+dig wydapp.fr
+```
+
+### Un service ne démarre pas
+
+```bash
+# Voir les logs du service
+docker compose logs nom_service
+
+# Vérifier la santé des containers
+docker compose ps
+```
+
+### Base de données corrompue
+
+```bash
+# Restaurer depuis un backup
+make restore BACKUP_DATE=2025-10-01
+```
+
+## 📚 Documentation Supplémentaire
+
+- [Caddy Documentation](https://caddyserver.com/docs)
+- [Docker Documentation](https://docs.docker.com)
+- [N8N Documentation](https://docs.n8n.io)
+- [Symfony Documentation](https://symfony.com/doc)
+
+## 🤝 Contribution
+
+Pour contribuer à ce projet :
+
+1. Créer une branche depuis `main`
+2. Faire vos modifications
+3. Tester localement
+4. Ouvrir une Pull Request
+
+## 📝 Licence
+
+Projet privé - Tous droits réservés
+
+## 👤 Auteur
+
+**Novak1a**
+- GitHub: [@Novak1a](https://github.com/Novak1a)
+
+## 📞 Support
+
+Pour toute question : contact@maximemarc.com
 
 ---
 
-## 🚀 À propos de moi
-
-- 🎯 Objectif actuel : {{ex. Construire un projet SaaS open-source / Contribuer à des libs Python}}
-- 🌱 J’apprends en ce moment : {{ex. Next.js, Rust, Docker, IA avec PyTorch}}
-- 💡 Intérêts : {{ex. systèmes distribués, optimisation, dev fullstack, sécurité}}
-- 🤝 Ouvert à : collaborations, contributions open-source, idées folles
-- 📫 Me contacter : {{email pro}} · {{LinkedIn}} · {{Twitter/X}} · {{Portfolio}}
-- ⚡ Fun fact : {{ex. Je code mieux avec du café / J'automatise tout}}
-
----
-
-## 🧰 Stack & Outils
-
-### Langages
-<!-- Remplace/complète selon ton stack -->
-![Langage](https://img.shields.io/badge/Code-Python-blue?logo=python)
-![Langage](https://img.shields.io/badge/Code-JavaScript-yellow?logo=javascript)
-![Langage](https://img.shields.io/badge/Code-TypeScript-3178C6?logo=typescript)
-![Langage](https://img.shields.io/badge/Code-Rust-b7410e?logo=rust)
-![Langage](https://img.shields.io/badge/Code-SQL-4479A1?logo=postgresql)
-
-### Frameworks / Libs
-![Framework](https://img.shields.io/badge/Web-Next.js-black?logo=nextdotjs)
-![Framework](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)
-![Framework](https://img.shields.io/badge/UI-React-61DAFB?logo=react)
-![Framework](https://img.shields.io/badge/Data-Pandas-150458?logo=pandas)
-![Framework](https://img.shields.io/badge/IA-PyTorch-ee4c2c?logo=pytorch)
-
-### DevOps & Infra
-![Tool](https://img.shields.io/badge/Container-Docker-2496ED?logo=docker)
-![Tool](https://img.shields.io/badge/Cloud-AWS-232F3E?logo=amazonaws)
-![Tool](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions)
-![Tool](https://img.shields.io/badge/Orchestration-Kubernetes-326ce5?logo=kubernetes)
-
-### Outils & Autres
-![Tool](https://img.shields.io/badge/Editor-VS_Code-007ACC?logo=visualstudiocode)
-![Tool](https://img.shields.io/badge/Terminal-Zsh-89e051?logo=gnu-bash)
-![Tool](https://img.shields.io/badge/Design-Figma-F24E1E?logo=figma)
-![Tool](https://img.shields.io/badge/AI-Copilot-000000?logo=githubcopilot)
-
----
-
-## 📌 Projets phares
-
-| Projet | Description | Stack | Lien |
-|--------|-------------|-------|------|
-| {{Nom du projet 1}} | {{Courte description}} | {{ex. TS, Next.js, Postgres}} | [Repo](https://github.com/Novak1a/{{repo1}}) |
-| {{Nom du projet 2}} | {{Description}} | {{Stack}} | [Repo](https://github.com/Novak1a/{{repo2}}) |
-| {{Nom du projet 3}} | {{Description}} | {{Stack}} | [Repo](https://github.com/Novak1a/{{repo3}}) |
-
-> Astuce : épingle ces repos dans GitHub (Your profile -> Customize profile -> Pinned).
-
----
-
-## 📊 Stats GitHub (optionnel)
-
-<div align="center">
-
-<!-- Stats générales -->
-<img src="https://github-readme-stats.vercel.app/api?username=Novak1a&show_icons=true&theme=tokyonight&hide_border=true" height="170" />
-<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Novak1a&layout=compact&theme=tokyonight&hide_border=true" height="170" />
-
-<!-- Streak -->
-<img src="https://streak-stats.demolab.com/?user=Novak1a&theme=tokyonight&hide_border=true" height="170" />
-
-<!-- (Optionnel) Trophies -->
-<!-- <img src="https://github-profile-trophy.vercel.app/?username=Novak1a&theme=onedark&no-frame=true&no-bg=true&margin-w=5" /> -->
-
-</div>
-
----
-
-## 🧠 Ce que j’apprends / Roadmap
-
-- ✅ {{Compétence acquise récente}}
-- 🔄 {{En cours : ex. Architecture hexagonale, tests e2e}}
-- 🧪 {{Expérimentation : ex. LLMs, agents, RAG}}
-- 🎯 Prochain : {{Objectif futur}}
-
----
-
-## 🤝 Contributions open-source
-
-- {{Lib / projet}} : {{type de contribution (ex. bugfix, feature, doc)}}
-- {{Autre}} : {{Description rapide}}
-
-> N’hésite pas à me proposer des issues ou idées d’amélioration !
-
----
-
-## 🛠 Idées / Mini-labs
-
-| Idée | Statut | Sujet |
-|------|--------|-------|
-| {{ex. Dashboard monitoring perso}} | Prototype | Observabilité |
-| {{ex. Générateur de prompts}} | Idée | IA |
-| {{ex. CLI pour automatiser X}} | En cours | DevTools |
-
----
-
-## 🗣️ Citation / Dev Motto
-
-> "{{Une phrase inspirante ou personnelle sur le code / l’apprentissage}}"
-
----
-
-## 💬 Me contacter
-
-- Email : {{pro@exemple.com}}
-- LinkedIn : [{{Ton Nom}}]({{url LinkedIn}})
-- Twitter / X : [@{{handle}}]({{url}})
-- Portfolio : {{URL}}
-
----
-
-## ☕ Support
-
-Si tu aimes mes projets :
-- ⭐ Star les repos
-- 🗣 Partager une idée
-- 🧩 Ouvrir une issue constructive
-
----
-
-<p align="center">
-Merci d'être passé 😄 · Dernière mise à jour : {{YYYY-MM-DD}}
-</p>
-
-<!--
-RAPIDES CONSEILS :
-1. Mets à jour régulièrement la section "Roadmap".
-2. Évite d'afficher trop de badges inutiles.
-3. Les stats GitHub peuvent parfois ne pas charger : pas grave.
-4. Garde ce README lisible sur mobile.
--->
+**Dernière mise à jour:** 2025-10-02
